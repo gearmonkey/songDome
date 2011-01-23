@@ -111,7 +111,7 @@ def main(argv=None):
 		form = cgi.FieldStorage()
 		artistA = form.getfirst("artist1")
 		artistB = form.getfirst("artist2")
-		if None in [artistA, aritistB]:
+		if None in [artistA, artistB]:
 			print dumps({'return_code':'error::give two artists.'}) 
 			return
 		select_track_by = form.getfirst("select", "song_hotttnesss-desc")
