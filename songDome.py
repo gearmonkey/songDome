@@ -22,6 +22,7 @@ import sys
 import cgi
 import urllib2
 import random
+from os.path import join, exists
 
 from simplejson import loads, dumps
 
@@ -89,7 +90,25 @@ def fetch7DigUrl(artist, sort_order = "song_hotttnesss-desc"):
 	#this should blow up if the track doesn't exist, should handle that in a reasonable way
 	return loads(out)['response']['songs'][0]['tracks'][0]['preview_url']
 
-def grabSongForArtist(artist, emphasis = song_hotttnesss-desc):
+def dlFile2Disk(url,filename):
+	req = urllib2.urlopen(url)
+	CHUNK = 16 * 1024
+	fp = open(filename, 'wb')
+	while True:
+		chunk = req.read(CHUNK)
+		if not chunk: break
+		fp.write(chunk)
+
+def grabSongForArtist(artist, emphasis = "song_hotttnesss-desc"):
+	"""
+	grab the most relevant 7digital clip for a track based on the emphasis call which must be one of the valid values for sort strings as documented at http://developer.echonest.com/docs/v4/song.html#search
+	after the song is dl'd (or the cache is found to exist and be sufficiently fresh) it's loaded in as a remix audio object and returned
+	"""
+	#dirty cache, for now it never expires
+	filename = join(CACHE_DIR, artist+emphasis+'.mp3')
+	if not exists(filename):
+		dlFile2Disk(fetch7DigUrl(artist, emphasis), filename)
+	return audio.LocalAudioFile(filename)
 
 def main(argv=None):
 	if argv==None:
@@ -104,8 +123,8 @@ def main(argv=None):
 			battle_length = int(form.getfirst("battle_length", "8"))
 		except ValueError:
 			print
-	songA = selectArtistSong(artistA) #returns the echonest audio object for the song
-	songB = selectArtistSong(artistB)
+	songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
+	songB = grabSongForArtist(artistB)
 	
 	zipSongs(song)
 	return domain_name+file_name #this should actually be lightly json wrapped me thinks
