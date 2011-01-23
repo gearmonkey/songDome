@@ -53,12 +53,12 @@ def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False
 
 	"""
 	if random_order == True and random.sample([True, False], 1)[0]:
-		firstSong = songB.analysis.beats.that(fall_on_the(1))
-		secondSong = songA.analysis.beats.that(fall_on_the(1))
+		firstSong = songB
+		secondSong = songA
 		flipped = True
 	else:
-		firstSong = songA.analysis.beats.that(fall_on_the(1))
-		secondSong = songB.analysis.beats.that(fall_on_the(1))
+		firstSong = songA
+		secondSong = songB
 		flipped = False
 	onesA = firstSong.analysis.beats.that(fall_on_the(1))
 	onesB = secondSong.analysis.beats.that(fall_on_the(1))
