@@ -35,7 +35,7 @@ from echonest.selection import fall_on_the
 from my_key import EN_API_KEY #a file inline that contains an echonest key
 
 CACHE_DIR = "./cache/"
-
+DOMAIN_PATH = "http://songdome.benfields.net/"
 
 
 help_message = '''
@@ -122,13 +122,16 @@ def main(argv=None):
 		try:
 			battle_length = int(form.getfirst("battle_length", "8"))
 		except ValueError:
-			print
-	songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
-	songB = grabSongForArtist(artistB)
-	
-	zipSongs(song)
-	return domain_name+file_name #this should actually be lightly json wrapped me thinks
-
+			print dumps({'return_code':'error::battle_length could not be converted to an integer.'})
+			return
+	outfile = join(CACHE_DIR, "zipped_"+artistA+"_"+artistB+select_track_by+".mp3")
+	# dirty cache here as well... no expire
+	if not exists(outfile):
+		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
+		songB = grabSongForArtist(artistB)
+		zipSongs(song, outfile)
+	print dumps({'return_code':'ok','available_as':join(DOMAIN_PATH,file_name.lstrip('./'))})
+	return
 
 if __name__ == "__main__":
 	sys.exit(main())
