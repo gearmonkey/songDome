@@ -127,7 +127,7 @@ def main(argv=None):
 	if not exists(outfile):
 		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
 		songB = grabSongForArtist(artistB)
-		zipSongs(song, outfile)
+		zipSongs(songA, songB, outfile)
 	print dumps({'return_code':'ok','available_as':join(DOMAIN_PATH,file_name.lstrip('./'))})
 	return
 
