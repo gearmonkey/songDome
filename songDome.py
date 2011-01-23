@@ -70,7 +70,7 @@ def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False
 		lacedUp.append(audio.getpieces(secondSong, [onesB[bar_num]]))
 	if flipped:
 		lacedUp.append(audio.getpieces(firstSong, [onesA[5]]))
-	lacedUp.append(audio.getpieces(SongA,SongA.analysis.bars[battle_length:]))
+	lacedUp.append(audio.getpieces(songA,songA.analysis.bars[battle_length:]))
 	lacedUp.encode(outfile_name)
 	return
 
@@ -124,7 +124,7 @@ def main(argv=None):
 		except ValueError:
 			print dumps({'return_code':'error::battle_length could not be converted to an integer.'})
 			return
-	outfile = join(CACHE_DIR, "zipped_"+artistA+"_"+artistB+select_track_by+".mp3")
+	outfile = join(CACHE_DIR, "zipped_"+artistA+"_"+artistB+"_" + select_track_by+".mp3")
 	# dirty cache here as well... no expire
 	if not exists(outfile):
 		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
