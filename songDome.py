@@ -29,6 +29,8 @@ import echonest.audio as audio
 from echonest.selection import fall_on_the
 
 from my_key import EN_API_KEY #a file inline that contains an echonest key
+from pyechonest import config
+config.ECHO_NEST_API_KEY=EN_API_KEY
 
 CACHE_DIR = "./cache/"
 DOMAIN_PATH = "http://songdome.benfields.net/"
