@@ -23,13 +23,9 @@ import cgi
 import urllib2
 import random
 from os.path import join, exists
-
 from simplejson import loads, dumps
 
 import echonest.audio as audio
-import scikits.samplerate as src
-
-
 from echonest.selection import fall_on_the
 
 from my_key import EN_API_KEY #a file inline that contains an echonest key
