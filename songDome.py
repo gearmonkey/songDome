@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-songBoxing.py
+songDome.py
 
 
 
@@ -33,14 +33,15 @@ class Usage(Exception):
 	def __init__(self, msg):
 		self.msg = msg
 
-def zipSongs(songA, songB, battle_length, outfile_name, random_order = False):
+def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False):
 	"""
 	alternates between a downbeat from songA and a downbeat from songB for battle_length number of bars from each, then play the remainder from songA.
 	
 	if random_order is True then songA will still always win but the playorder will be reversed approximately half the time.
 
 	"""
-	
+	if random_order == True:
+		raise NotImplemented('no random order yet')
 	onesA = songA.analysis.beats.that(fall_on_the(1))
 	onesB = songB.analysis.beats.that(fall_on_the(1))
 	
@@ -55,7 +56,7 @@ def zipSongs(songA, songB, battle_length, outfile_name, random_order = False):
 
 
 def main(argv=None):
-	if argv=None:
+	if argv==None:
 		argv = sys.argv()
 	if not len(argv) in [2,3,4]:
 		raise Usage('not enough args...')
