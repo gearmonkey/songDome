@@ -1,0 +1,13 @@
+Index: src/echonest/audio.py
+===================================================================
+--- src/echonest/audio.py	(revision 499)
++++ src/echonest/audio.py	(working copy)
+@@ -287,7 +287,7 @@
+                 sampleRate, numChannels = settings_from_ffmpeg(parsestring[1])
+         self.defer = defer
+         self.filename = filename
+-        self.sampleRate = sampleRate
++        self.sampleRate = 44100#I changed this to force - used to be sampleRate
+         self.numChannels = numChannels
+         self.convertedfile = None
+         self.endindex = 0

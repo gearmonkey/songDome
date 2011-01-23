@@ -20,9 +20,13 @@ cgitb.enable()
 from simplejson import loads, dumps
 
 import echonest.audio as audio
+import scikits.samplerate as src
+
 from echonest.selection import fall_on_the
 
 from my_key import EN_API_KEY #a file inline that contains an echonest key
+
+CACHE_DIR = "./cache/"
 
 
 # track selection methods
@@ -49,11 +53,19 @@ def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False
 	onesA = songA.analysis.beats.that(fall_on_the(1))
 	onesB = songB.analysis.beats.that(fall_on_the(1))
 	
+	if songA.sampleRate != songB.sampleRate: #wooo!
+		print "changing songB sample rate of", songB.sampleRate, "to", songA.sampleRate
+		print 'songB has shape of', songB.data.shape
+		songB.data = src.resample(songB.data, float(songA.sampleRate)/songB.sampleRate, 'sinc_medium')
+		songB.sampleRate = songA.sampleRate
+		print 'songB has shape of', songB.data.shape
+		
 	lacedUp = audio.AudioData(shape=
-		(int(1.2*len(songA.data)),2), numChannels=2, sampleRate=44100)
+		(int(1.2*len(songA.data)),2), numChannels=songA.numChannels, sampleRate=songA.sampleRate)
 	for bar_num in xrange(battle_length):
 		lacedUp.append(audio.getpieces(songA, [onesA[bar_num]]))
 		lacedUp.append(audio.getpieces(songB, [onesB[bar_num]]))
+	lacedUp.append(audio.getpieces(songA,songA.analysis.bars[battle_length:]))
 	lacedUp.encode(outfile_name)
 	return
 
