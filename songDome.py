@@ -12,13 +12,17 @@ Copyright (c) 2011 Goldsmith University of London. All rights reserved.
 
 import sys
 import cgi
+import urllib2
 
 import cgitb
 cgitb.enable()
 
+from simplejson import loads, dumps
+
 import echonest.audio as audio
 from echonest.selection import fall_on_the
 
+from my_key import EN_API_KEY #a file inline that contains an echonest key
 
 
 # track selection methods
@@ -41,19 +45,33 @@ def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False
 
 	"""
 	if random_order == True:
-		raise NotImplemented('no random order yet')
+		raise NotImplementedError
 	onesA = songA.analysis.beats.that(fall_on_the(1))
 	onesB = songB.analysis.beats.that(fall_on_the(1))
 	
 	lacedUp = audio.AudioData(shape=
 		(int(1.2*len(songA.data)),2), numChannels=2, sampleRate=44100)
-	for bar_num in xrange(8):
-		#xrange is numoverlaping downbeats
+	for bar_num in xrange(battle_length):
 		lacedUp.append(audio.getpieces(songA, [onesA[bar_num]]))
 		lacedUp.append(audio.getpieces(songB, [onesB[bar_num]]))
 	lacedUp.encode(outfile_name)
 	return
 
+def getIDFromName(artist, fuzzy_match=False):
+	res = urllib2.urlopen(\
+		"http://developer.echonest.com/api/v4/artist/search?api_key=%s&format=json&name=%s&fuzzy_match=%s"%\
+		(EN_API_KEY,artist.replace(' ','%20'), str(fuzzy_match).lower()))
+	out = res.read()
+	res.close()
+	return loads(out)['response']['artists'][0]['id']
+
+def fetch7DigUrl(artist, sort_order = "song_hotttnesss-desc"):
+	artistID = getIDFromName(artist)
+	res = urllib2.urlopen("http://developer.echonest.com/api/v4/song/search?api_key=%s&format=json&results=1&artist_id=%s&sort=%s&bucket=id:7digital&limit=true&bucket=tracks"%(EN_API_KEY,artistID, sort_order))
+	out = res.read()
+	res.close()
+	#this should blow up if the track doesn't exist, should handle that in a reasonable way
+	return loads(out)['response']['songs'][0]['tracks'][0]['preview_url']
 
 def main(argv=None):
 	if argv==None:
