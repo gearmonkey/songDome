@@ -1,0 +1,13 @@
+"Two songs enter, one song plays!"
+
+When it works, you should be able to call:
+
+http:/someDomain/songDome/artistA/artistB/select_track_by/
+
+[select_track_by is optional]
+
+which will give the following JSON on success (blocking till audio is available, cause I'm lazy):
+{
+return_code:'ok',
+available_as: 'http://url.to.the/battle.mp3'
+}
