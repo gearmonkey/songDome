@@ -130,7 +130,7 @@ def main(argv=None):
 		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
 		songB = grabSongForArtist(artistB)
 		zipSongs(songA, songB, outfile)
-	print dumps({'return_code':'ok','available_as':join(DOMAIN_PATH,file_name.lstrip('./'))})
+	print dumps({'return_code':'ok','available_as':join(DOMAIN_PATH,outfile.lstrip('./'))})
 	return
 
 if __name__ == "__main__":
