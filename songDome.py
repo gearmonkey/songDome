@@ -65,14 +65,17 @@ def zipSongs(songA, songB, outfile_name, battle_length = 8, random_order = False
 		
 	lacedUp = audio.AudioData(shape=
 		(int(1.2*len(firstSong.data)),2), numChannels=firstSong.numChannels, sampleRate=firstSong.sampleRate)
+	overlap_time = 0
 	for bar_num in xrange(battle_length):
 		lacedUp.append(audio.getpieces(firstSong, [onesA[bar_num]]))
 		lacedUp.append(audio.getpieces(secondSong, [onesB[bar_num]]))
+		overlap_time += onesA[bar_num].duration + onesB[bar_num].duration
 	if flipped:
-		lacedUp.append(audio.getpieces(firstSong, [onesA[5]]))
+		lacedUp.append(audio.getpieces(firstSong, [onesA[battle_length]]))
+		overlap_time += onesA[battle_length].duration
 	lacedUp.append(audio.getpieces(songA,songA.analysis.bars[battle_length:]))
 	lacedUp.encode(outfile_name)
-	return
+	return overlap_time
 
 def getIDFromName(artist, fuzzy_match=False):
 	res = urllib2.urlopen(\
@@ -105,6 +108,7 @@ def grabSongForArtist(artist, emphasis = "song_hotttnesss-desc"):
 	after the song is dl'd (or the cache is found to exist and be sufficiently fresh) it's loaded in as a remix audio object and returned
 	"""
 	#dirty cache, for now it never expires
+	artist = artist
 	filename = join(CACHE_DIR, artist+emphasis+'.mp3')
 	if not exists(filename):
 		dlFile2Disk(fetch7DigUrl(artist, emphasis), filename)
@@ -113,8 +117,8 @@ def grabSongForArtist(artist, emphasis = "song_hotttnesss-desc"):
 def main(argv=None):
 	if argv==None:
 		form = cgi.FieldStorage()
-		artistA = form.getfirst("artist1")
-		artistB = form.getfirst("artist2")
+		artistA = form.getfirst("artist1").lower()
+		artistB = form.getfirst("artist2").lower()
 		if None in [artistA, artistB]:
 			print dumps({'return_code':'error::give two artists.'}) 
 			return
@@ -129,8 +133,10 @@ def main(argv=None):
 	if not exists(outfile):
 		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
 		songB = grabSongForArtist(artistB)
-		zipSongs(songA, songB, outfile)
-	print dumps({'return_code':'ok','available_as':join(DOMAIN_PATH,outfile.lstrip('./'))})
+		overlap_duration = zipSongs(songA, songB, outfile)
+	print dumps({'return_code':'ok',
+			'available_as':join(DOMAIN_PATH,outfile.lstrip('./')),
+			'overlap_duration':overlap_duration})
 	return
 
 if __name__ == "__main__":
