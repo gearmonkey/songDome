@@ -130,10 +130,10 @@ def main(argv=None):
 			return
 	outfile = join(CACHE_DIR, "zipped_"+artistA+"_"+artistB+"_" + select_track_by+".mp3")
 	# dirty cache here as well... no expire
-	if not exists(outfile):
-		songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
-		songB = grabSongForArtist(artistB)
-		overlap_duration = zipSongs(songA, songB, outfile)
+	# if not exists(outfile):
+	songA = grabSongForArtist(artistA) #returns the echonest audio object for the song
+	songB = grabSongForArtist(artistB)
+	overlap_duration = zipSongs(songA, songB, outfile)
 	print dumps({'return_code':'ok',
 			'available_as':join(DOMAIN_PATH,outfile.lstrip('./')),
 			'overlap_duration':overlap_duration})
